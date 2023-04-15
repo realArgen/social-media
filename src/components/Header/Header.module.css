@@ -1,0 +1,21 @@
+.header {
+    grid-area: h;
+    background: rgb(146, 184, 31);
+    display: flex;
+    justify-content: space-between;
+    column-gap: 50px;
+    align-items: center;
+    padding: 0 40px;
+}
+
+.header>img {
+    width: 40px;
+}
+
+.loginBLock {
+    /* float: right; */
+    cursor: pointer;
+    font-size: 26px;
+    color: rgb(255, 255, 255);
+    font-weight: bold;
+}

@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { followAC, setCurrentPageAC, setIsFetchingAC, setTotalUsersCountAC, setUsersAC, toggleFollowingProgress, unfollowAC } from '../../redux/usersReducer';
+import { followSuccess, getUsersThunkCreator, setCurrentPageAC, unfollowSuccess } from '../../redux/usersReducer';
 import styles from './Users.module.css';
 import userPhoto from './../../assets/images/user.jpg';
 import Preloader from '../common/Preloader/Preloader';
 import { NavLink } from 'react-router-dom';
-import { usersAPI } from '../../api/api';
 
 const Users = () => {
+
     const users = useSelector((state) => state.usersPage.users);
     const pageSize = useSelector((state) => state.usersPage.pageSize);
     const totalUsersCount = useSelector((state) => state.usersPage.totalUsersCount);
@@ -20,32 +19,21 @@ const Users = () => {
 
     const [pages, setPages] = useState([]);
 
-
     useEffect(() => {
-        dispatch(setIsFetchingAC(true));
-        usersAPI.getUsers(currentPage, pageSize)
-            .then(({ data }) => {
-                dispatch(setTotalUsersCountAC(data.totalCount));
-                dispatch(setIsFetchingAC(false));
-            })
+        dispatch(getUsersThunkCreator(currentPage, pageSize))
 
         let pagesCount = Math.ceil(totalUsersCount / pageSize);
+
         let portion = []
+
         for (let i = 1; i <= pagesCount; i++) {
             portion.push(i);
         }
+
         setPages(portion);
-    }, [totalUsersCount, pageSize]);
 
-    useEffect(() => {
-        dispatch(setIsFetchingAC(true));
-        usersAPI.getUsers(currentPage, pageSize)
-            .then(({ data }) => {
-                dispatch(setUsersAC(data.items));
-                dispatch(setIsFetchingAC(false));
-            })
+    }, [currentPage, totalUsersCount, pageSize]);
 
-    }, [currentPage]);
 
     let curPF = ((currentPage - 5) < 0) ? 0 : currentPage - 5;
     let curPL = currentPage + 5;
@@ -78,49 +66,12 @@ const Users = () => {
                             <div>
                                 {u.followed ?
                                     <button disabled={followingInProgress.some((id) => id === u.id)} onClick={() => {
-                                        dispatch(toggleFollowingProgress(true, u.id))
-                                        axios
-                                            .delete(`https://social-network.samuraijs.com/api/1.0/follow/${u.id}`,
-                                                {
-                                                    withCredentials: true,
-                                                    headers:
-                                                    {
-                                                        "API-KEY": "b9e8c267-68bc-46b5-b916-60b3481f4493"
-                                                    }
-                                                }
-                                            )
-                                            .then(({ data }) => {
-                                                if (data.resultCode === 0) {
-                                                    dispatch(unfollowAC(u.id))
-                                                    console.log(data);
-                                                }
-                                                dispatch(toggleFollowingProgress(false, u.id))
-                                            })
-
+                                        dispatch(unfollowSuccess(u.id))
                                     }}>
                                         Unfollow
                                     </button> :
                                     <button disabled={followingInProgress.some((id) => id === u.id)} onClick={() => {
-                                        dispatch(toggleFollowingProgress(true, u.id))
-
-                                        axios
-                                            .post(`https://social-network.samuraijs.com/api/1.0/follow/${u.id}`,
-                                                {},
-                                                {
-                                                    withCredentials: true,
-                                                    headers:
-                                                    {
-                                                        "API-KEY": "b9e8c267-68bc-46b5-b916-60b3481f4493"
-                                                    }
-                                                },
-                                            )
-                                            .then(({ data }) => {
-                                                if (data.resultCode === 0) {
-                                                    dispatch(followAC(u.id))
-                                                    console.log(data);
-                                                }
-                                                dispatch(toggleFollowingProgress(false, u.id))
-                                            })
+                                        dispatch(followSuccess(u.id))
                                     }}>
                                         Follow
                                     </button>}

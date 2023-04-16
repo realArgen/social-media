@@ -1,3 +1,5 @@
+import { usersAPI } from "../api/api";
+
 const FOLLOW = "FOLLOW";
 const UNFOLLOW = "UNFOLLOW";
 const SET__USERS = "SET__USERS";
@@ -78,14 +80,39 @@ export const setTotalUsersCountAC = (total) => ({ type: SET__TOTAL__USERS__COUNT
 export const setIsFetchingAC = (isFetching) => ({ type: TOGGLE_IS_FETCHING, isFetching })
 export const toggleFollowingProgress = (isFetching, id) => ({ type: TOGGLE_FOLLOWING_PROGRESS, isFetching, id })
 
+export const getUsersThunkCreator = (currentPage, pageSize) => (dispatch) => {
+    dispatch(setIsFetchingAC(true));
+    usersAPI.getUsers(currentPage, pageSize)
+        .then(({ data }) => {
+            dispatch(setUsersAC(data.items));
+            dispatch(setTotalUsersCountAC(data.totalCount));
+            dispatch(setIsFetchingAC(false));
+        })
+}
+
+export const followSuccess = (id) => (dispatch) => {
+    dispatch(toggleFollowingProgress(true, id))
+    usersAPI.follow(id)
+        .then(({ data }) => {
+            if (data.resultCode === 0) {
+                dispatch(followAC(id))
+                console.log(data);
+            }
+            dispatch(toggleFollowingProgress(false, id))
+        })
+}
+
+export const unfollowSuccess = (id) => (dispatch) => {
+    dispatch(toggleFollowingProgress(true, id))
+    usersAPI.unfollow(id)
+        .then(({ data }) => {
+            if (data.resultCode === 0) {
+                dispatch(unfollowAC(id))
+                console.log(data);
+            }
+            dispatch(toggleFollowingProgress(false, id))
+        })
+}
 
 export default usersReducer;
 
-
-
-// "https://cdn-icons-png.flaticon.com/512/149/149071.png"
-
-// { id: 1, photoUrl: "https://cdn-icons-png.flaticon.com/512/149/149071.png", followed: true, fullName: "John Doe", status: "I am a boss", location: { city: "Minsk", country: "Belarus" } },
-// { id: 2, photoUrl: "https://cdn-icons-png.flaticon.com/512/149/149071.png", followed: false, fullName: "John Doe", status: "Hi, I am a boss too", location: { city: "Bishkek", country: "KG" } },
-// { id: 3, photoUrl: "https://cdn-icons-png.flaticon.com/512/149/149071.png", followed: false, fullName: "John Doe", status: "Hi, how are you?", location: { city: "Moscow", country: "RF" } },
-// { id: 4, photoUrl: "https://cdn-icons-png.flaticon.com/512/149/149071.png", followed: true, fullName: "John Wick", status: "Hi, you?", location: { city: "Kiev", country: "UK" } },

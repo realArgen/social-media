@@ -1,3 +1,5 @@
+import { usersAPI } from "../api/api";
+
 const ADD__POST = "ADD__POST";
 const UPDATE__NEW__POST__TEXT = "UPDATE__NEW__POST__TEXT";
 const SET_USER_PROFILE = "SET_USER_PROFILE";
@@ -49,5 +51,16 @@ export const addPostActionCreator = () => ({ type: ADD__POST })
 export const updateNewPostTextActionCreator = (message) => ({ type: UPDATE__NEW__POST__TEXT, newPostText: message })
 export const setUserProfile = (profile) => ({ type: SET_USER_PROFILE, profile })
 export const setIsFetchingAC = (isFetching) => ({ type: SET_IS_FETCHING, isFetching })
+
+export const getProfileThunkCreator = (id) => (dispatch) => {
+    dispatch(setIsFetchingAC(true));
+    id && usersAPI.getProfile(id)
+        .then(({ data }) => {
+            dispatch(setUserProfile(data));
+            dispatch(setIsFetchingAC(false));
+            console.log(data);
+            console.log(id);
+        })
+}
 
 export default profileReducer;

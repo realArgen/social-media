@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react'
 import c from './Header.module.css'
 import { Link } from 'react-router-dom'
-import axios from 'axios'
-import { setAuthUserData } from '../../redux/auth-reducer'
+import { getAuthUserData, setAuthUserData } from '../../redux/auth-reducer'
 import { useDispatch, useSelector } from 'react-redux'
+import { authAPI } from '../../api/api'
 
 const Header = () => {
 
@@ -13,18 +13,7 @@ const Header = () => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        axios
-            .get(`https://social-network.samuraijs.com/api/1.0/auth/me`,
-                { withCredentials: true }
-            )
-            .then(({ data }) => {
-                if (data.resultCode === 0) {
-                    let { id, login, email } = data.data;
-                    dispatch(setAuthUserData(id, email, login));
-                }
-            })
-
-
+        dispatch(getAuthUserData())
     }, [])
 
 

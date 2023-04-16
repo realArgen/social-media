@@ -13,11 +13,21 @@ export const usersAPI = {
     getUsers(currentPage = 1, pageSize = 10) {
         return instance.get(`users?page=${currentPage}&count=${pageSize}`)
     },
+    getProfile(id = 9) {
+        return instance.get(`profile/${id}`)
+    },
     unfollow(id = 11) {
         return instance.delete(`follow/${id}`)
     },
     follow(id = 11) {
         return instance.post(`follow/${id}`)
     }
+}
+
+export const authAPI = {
+    me() {
+        return instance.get(`auth/me`)
+    }
+
 }
 

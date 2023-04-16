@@ -2,15 +2,17 @@ import React, { useEffect } from 'react'
 import c from './ProfileInfo.module.css'
 import userPhoto from './../../../assets/images/user.jpg'
 import Preloader from '../../common/Preloader/Preloader'
-import axios from 'axios'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
-import { setIsFetchingAC } from '../../../redux/usersReducer'
-import { setUserProfile } from '../../../redux/profileReducer'
+import { getProfileThunkCreator } from '../../../redux/profileReducer'
 
 const ProfileInfo = () => {
 
     let authId = useSelector((state) => state.auth.id);
+
+    const profile = useSelector((state) => state.profilePage.profile)
+
+    const isFetching = useSelector((state) => state.profilePage.isFetching)
 
     let { id } = useParams();
 
@@ -18,22 +20,10 @@ const ProfileInfo = () => {
         id = authId;
     }
 
-    const profile = useSelector((state) => state.profilePage.profile)
-
-    const isFetching = useSelector((state) => state.profilePage.isFetching)
-
     const dispatch = useDispatch();
-    // 25193
+
     useEffect(() => {
-        dispatch(setIsFetchingAC(true));
-        id && axios
-            .get(`https://social-network.samuraijs.com/api/1.0/profile/${id}`)
-            .then(({ data }) => {
-                dispatch(setUserProfile(data));
-                dispatch(setIsFetchingAC(false));
-                console.log(data);
-                console.log(id);
-            })
+        dispatch(getProfileThunkCreator(id))
     }, [id])
 
     return (

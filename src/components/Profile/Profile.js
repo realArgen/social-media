@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import c from './Profile.module.css'
 import ProfileInfo from './ProfileInfo/ProfileInfo'
 import MyPosts from './MyPosts/MyPosts'

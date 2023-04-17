@@ -4,9 +4,13 @@ import { followSuccess, getUsersThunkCreator, setCurrentPageAC, unfollowSuccess 
 import styles from './Users.module.css';
 import userPhoto from './../../assets/images/user.jpg';
 import Preloader from '../common/Preloader/Preloader';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 const Users = () => {
+
+    const navigate = useNavigate();
+
+    const isAuth = useSelector((state) => state.auth.isAuth);
 
     const users = useSelector((state) => state.usersPage.users);
     const pageSize = useSelector((state) => state.usersPage.pageSize);
@@ -38,6 +42,10 @@ const Users = () => {
     let curPF = ((currentPage - 5) < 0) ? 0 : currentPage - 5;
     let curPL = currentPage + 5;
     let slicedPages = pages.slice(curPF, curPL);
+
+    if (!isAuth) {
+        navigate('./../../login')
+    }
 
     return (
         <div>

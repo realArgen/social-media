@@ -1,15 +1,20 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { addMessageActionCreator, updateNewMessageActionCreator } from '../../redux/dialogsReducer'
 import DialogItem from './DialogItem/DialogItem'
 import c from './Dialogs.module.css'
 import Message from './Message/Message'
+import { useNavigate } from 'react-router-dom'
 
 const Dialogs = () => {
+
+    const navigate = useNavigate();
 
     const dialogs = useSelector((state) => state.dialogsPage.dialogs);
     const messages = useSelector((state) => state.dialogsPage.messages);
     const newMessageText = useSelector((state) => state.dialogsPage.newMessageText);
+
+    const isAuth = useSelector((state) => state.auth.isAuth)
 
     const dispatch = useDispatch();
 
@@ -20,6 +25,13 @@ const Dialogs = () => {
     const onMessageChange = (e) => {
         dispatch(updateNewMessageActionCreator(e.target.value));
     };
+
+    useEffect(() => {
+        if (!isAuth) {
+            navigate('./../../login')
+        }
+    }, [isAuth])
+
 
     return (
         <div className={c.dialogs}>

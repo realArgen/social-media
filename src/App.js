@@ -5,6 +5,7 @@ import Header from './components/Header/Header';
 import Navbar from './components/Navbar/Navbar';
 import Profile from './components/Profile/Profile';
 import Users from "./components/Users/Users";
+import Login from "./components/Login/Login";
 
 
 const App = () => {
@@ -15,8 +16,8 @@ const App = () => {
         <Navbar />
         <div className="app-wrapper-content">
           <Routes>
+            <Route path="/login" element={<Login />} />
             <Route path="/dialogs/*" element={<Dialogs />} />
-            {/* <Route path="/profile" element={<Profile />} /> */}
             <Route path="/profile/*" element={<Profile />} />
             <Route path="/profile/:id" element={<Profile />} />
             <Route path="/users" element={<Users />}></Route>

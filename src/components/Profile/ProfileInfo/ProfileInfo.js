@@ -3,10 +3,14 @@ import c from './ProfileInfo.module.css'
 import userPhoto from './../../../assets/images/user.jpg'
 import Preloader from '../../common/Preloader/Preloader'
 import { useDispatch, useSelector } from 'react-redux'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { getProfileThunkCreator } from '../../../redux/profileReducer'
 
 const ProfileInfo = () => {
+
+    const navigate = useNavigate();
+
+    let isAuth = useSelector((state) => state.auth.isAuth);
 
     let authId = useSelector((state) => state.auth.id);
 
@@ -23,8 +27,16 @@ const ProfileInfo = () => {
     const dispatch = useDispatch();
 
     useEffect(() => {
+        if (!isAuth) {
+            navigate('./../../login')
+        }
+    }, [isAuth])
+
+    useEffect(() => {
         dispatch(getProfileThunkCreator(id))
     }, [id])
+
+
 
     return (
         isFetching ? <Preloader isFetching={true} /> : <div>

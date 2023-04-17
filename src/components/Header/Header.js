@@ -1,9 +1,8 @@
 import React, { useEffect } from 'react'
 import c from './Header.module.css'
 import { Link } from 'react-router-dom'
-import { getAuthUserData, setAuthUserData } from '../../redux/auth-reducer'
+import { getAuthUserData } from '../../redux/auth-reducer'
 import { useDispatch, useSelector } from 'react-redux'
-import { authAPI } from '../../api/api'
 
 const Header = () => {
 
@@ -22,7 +21,7 @@ const Header = () => {
             <img src="https://www.freepnglogos.com/uploads/google-logo-png/google-logo-png-webinar-optimizing-for-success-google-business-webinar-13.png" alt="logo" />
             <div className={c.loginBLock}>
                 {isAuth ? login :
-                    <Link to={"/login"}>Login</Link>
+                    <Link className={c.logo} to={"/login"}>Login</Link>
                 }
             </div>
         </header>

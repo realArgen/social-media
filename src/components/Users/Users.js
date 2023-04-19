@@ -5,6 +5,7 @@ import styles from './Users.module.css';
 import userPhoto from './../../assets/images/user.jpg';
 import Preloader from '../common/Preloader/Preloader';
 import { NavLink, useNavigate } from 'react-router-dom';
+import { createPages } from '../common/createPages/pagesCreator';
 
 const Users = () => {
 
@@ -19,29 +20,16 @@ const Users = () => {
     const isFetching = useSelector((state) => state.usersPage.isFetching);
     const followingInProgress = useSelector((state) => state.usersPage.followingInProgress);
 
-    const dispatch = useDispatch();
+    let pages = [];
+    let pagesCount = Math.ceil(totalUsersCount / pageSize);
 
-    const [pages, setPages] = useState([]);
+    createPages(pages, pagesCount, currentPage);
+
+    const dispatch = useDispatch();
 
     useEffect(() => {
         dispatch(getUsersThunkCreator(currentPage, pageSize))
-
-        let pagesCount = Math.ceil(totalUsersCount / pageSize);
-
-        let portion = []
-
-        for (let i = 1; i <= pagesCount; i++) {
-            portion.push(i);
-        }
-
-        setPages(portion);
-
     }, [currentPage, totalUsersCount, pageSize]);
-
-
-    let curPF = ((currentPage - 5) < 0) ? 0 : currentPage - 5;
-    let curPL = currentPage + 5;
-    let slicedPages = pages.slice(curPF, curPL);
 
     if (!isAuth) {
         navigate('./../../login')
@@ -51,10 +39,10 @@ const Users = () => {
         <div>
             <div className={styles.pagesContainer}>
                 {"<<"}
-                {slicedPages.map((p, idx) => {
+                {pages.map((p) => {
                     return <span
                         onClick={() => { dispatch(setCurrentPageAC(p)) }}
-                        key={idx}
+                        key={p}
                         className={styles.pages + " " + (currentPage === p ? styles.selectedPage : "")}>
                         {p}
                     </span>
@@ -90,7 +78,6 @@ const Users = () => {
                                 <div>{u.name}</div>
                                 <div>{u.status}</div>
                             </span>
-
                         </span>
                     </div>
                 })

@@ -4,7 +4,7 @@ import userPhoto from './../../../assets/images/user.jpg'
 import Preloader from '../../common/Preloader/Preloader'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
-import { getProfileThunkCreator } from '../../../redux/profileReducer'
+import { getProfileThunkCreator, getStatusThunkCreator } from '../../../redux/profileReducer'
 import ProfileStatus from './ProfileStatus'
 
 const ProfileInfo = () => {
@@ -18,6 +18,9 @@ const ProfileInfo = () => {
     const profile = useSelector((state) => state.profilePage.profile)
 
     const isFetching = useSelector((state) => state.profilePage.isFetching)
+
+    const status = useSelector((state) => state.profilePage.status)
+
 
     let { id } = useParams();
 
@@ -37,7 +40,9 @@ const ProfileInfo = () => {
         dispatch(getProfileThunkCreator(id))
     }, [id])
 
-
+    useEffect(() => {
+        dispatch(getStatusThunkCreator(id))
+    }, [id])
 
     return (
         isFetching ? <Preloader isFetching={true} /> : <div>
@@ -48,9 +53,9 @@ const ProfileInfo = () => {
                 <img src={profile.photos.large || profile.photos.small || userPhoto} alt="profile" />
                 <p>{profile.fullName}</p>
                 <p>{profile.aboutMe}</p>
+                {authId === id ? <ProfileStatus /> : status}
             </div>
             <div>
-                <ProfileStatus status="wassap my g" />
             </div>
         </div>
     )

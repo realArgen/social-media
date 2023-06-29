@@ -1,9 +1,10 @@
-import { usersAPI } from "../api/api";
+import { profileAPI, usersAPI } from "../api/api";
 
 const ADD__POST = "ADD__POST";
 const UPDATE__NEW__POST__TEXT = "UPDATE__NEW__POST__TEXT";
 const SET_USER_PROFILE = "SET_USER_PROFILE";
 const SET_IS_FETCHING = "SET_IS_FETCHING";
+const SET_STATUS = "SET_STATUS";
 
 let initialState = {
     profile: null,
@@ -13,6 +14,7 @@ let initialState = {
     ],
     isFetching: true,
     newPostText: "It kamasutra",
+    status: "wassap my g"
 };
 
 const profileReducer = (state = initialState, action) => {
@@ -36,6 +38,11 @@ const profileReducer = (state = initialState, action) => {
                 ...state,
                 profile: action.profile
             };
+        case SET_STATUS:
+            return {
+                ...state,
+                status: action.status
+            };
         case SET_IS_FETCHING:
             return {
                 ...state,
@@ -50,6 +57,7 @@ const profileReducer = (state = initialState, action) => {
 export const addPostActionCreator = () => ({ type: ADD__POST })
 export const updateNewPostTextActionCreator = (message) => ({ type: UPDATE__NEW__POST__TEXT, newPostText: message })
 export const setUserProfile = (profile) => ({ type: SET_USER_PROFILE, profile })
+export const setStatus = (status) => ({ type: SET_STATUS, status })
 export const setIsFetchingAC = (isFetching) => ({ type: SET_IS_FETCHING, isFetching })
 
 export const getProfileThunkCreator = (id) => (dispatch) => {
@@ -60,6 +68,26 @@ export const getProfileThunkCreator = (id) => (dispatch) => {
             dispatch(setIsFetchingAC(false));
             console.log(data);
             console.log(id);
+        })
+}
+
+export const getStatusThunkCreator = (id) => (dispatch) => {
+    dispatch(setIsFetchingAC(true));
+    id && profileAPI.getStatus(id)
+        .then(({ data }) => {
+            dispatch(setStatus(data));
+            dispatch(setIsFetchingAC(false));
+        })
+}
+
+export const updateStatusThunkCreator = (status) => (dispatch) => {
+    dispatch(setIsFetchingAC(true));
+    profileAPI.updateStatus(status)
+        .then((response) => {
+            if (response.data.resultCode === 0) {
+                dispatch(setStatus(status));
+            }
+            dispatch(setIsFetchingAC(false));
         })
 }
 

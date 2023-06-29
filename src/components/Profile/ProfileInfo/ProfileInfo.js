@@ -5,6 +5,7 @@ import Preloader from '../../common/Preloader/Preloader'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import { getProfileThunkCreator } from '../../../redux/profileReducer'
+import ProfileStatus from './ProfileStatus'
 
 const ProfileInfo = () => {
 
@@ -47,6 +48,9 @@ const ProfileInfo = () => {
                 <img src={profile.photos.large || profile.photos.small || userPhoto} alt="profile" />
                 <p>{profile.fullName}</p>
                 <p>{profile.aboutMe}</p>
+            </div>
+            <div>
+                <ProfileStatus status="wassap my g" />
             </div>
         </div>
     )

@@ -1,94 +1,95 @@
 import { profileAPI, usersAPI } from "../api/api";
 
-const ADD__POST = "ADD__POST";
-const UPDATE__NEW__POST__TEXT = "UPDATE__NEW__POST__TEXT";
-const SET_USER_PROFILE = "SET_USER_PROFILE";
-const SET_IS_FETCHING = "SET_IS_FETCHING";
-const SET_STATUS = "SET_STATUS";
+const ADD_POST = 'ADD_POST';
+const DELETE_POST = 'DELETE_POST';
+const SAVE_PHOTO_SUCCESS = 'SAVE_PHOTO_SUCCESS';
+const SET_USER_PROFILE = 'SET_USER_PROFILE';
+const SET_STATUS = 'SET_STATUS';
 
 let initialState = {
-    profile: null,
-    posts: [{ id: 1, likes: 14, message: "Hi, how are you?" },
-    { id: 2, likes: 22, message: "Hi, how is your itkamasutra?" },
-    { id: 3, likes: 23, message: "yes!" },
+    posts: [
+        { id: 1, message: 'Hi, how are you?', likesCount: 10 },
+        { id: 2, message: 'It is my first post', likesCount: 0 },
+        { id: 3, message: 'Sveta', likesCount: 14 },
+        { id: 4, message: 'Sasha', likesCount: 5 },
+        { id: 5, message: 'Runner', likesCount: 4 },
+        { id: 6, message: 'Valera', likesCount: 23 }
     ],
-    isFetching: true,
-    newPostText: "It kamasutra",
-    status: "wassap my g"
-};
+    profile: null,
+    status: ""
+}
+
 
 const profileReducer = (state = initialState, action) => {
     switch (action.type) {
-        case ADD__POST:
+        case ADD_POST: {
+            let newPost = {
+                id: 7,
+                message: action.newPostText,
+                likesCount: 0
+            };
             return {
                 ...state,
-                posts: [
-                    ...state.posts,
-                    { id: state.posts[state.posts.length - 1].id + 1, likes: 14, message: state.newPostText }
-                ],
-                newPostText: ""
+                posts: [...state.posts, newPost],
+                newPostText: ''
             };
-        case UPDATE__NEW__POST__TEXT:
-            return {
-                ...state,
-                newPostText: action.newPostText
-            };
-        case SET_USER_PROFILE:
-            return {
-                ...state,
-                profile: action.profile
-            };
-        case SET_STATUS:
+        }
+
+        case SET_STATUS: {
             return {
                 ...state,
                 status: action.status
-            };
-        case SET_IS_FETCHING:
-            return {
-                ...state,
-                isFetching: action.isFetching
-            };
+            }
+        }
+        case SET_USER_PROFILE: {
+            return { ...state, profile: action.profile }
+        }
+        case DELETE_POST:
+            return { ...state, posts: state.posts.filter(p => p.id != action.postId) }
+        case SAVE_PHOTO_SUCCESS:
+            return { ...state, profile: { ...state.profile, photos: action.photos } }
         default:
             return state;
     }
-};
+}
 
-
-export const addPostActionCreator = () => ({ type: ADD__POST })
-export const updateNewPostTextActionCreator = (message) => ({ type: UPDATE__NEW__POST__TEXT, newPostText: message })
+export const addPost = (newPostText) => ({ type: ADD_POST, newPostText })
 export const setUserProfile = (profile) => ({ type: SET_USER_PROFILE, profile })
 export const setStatus = (status) => ({ type: SET_STATUS, status })
-export const setIsFetchingAC = (isFetching) => ({ type: SET_IS_FETCHING, isFetching })
+export const deletePost = (postId) => ({ type: DELETE_POST, postId })
+export const savePhotoSuccess = (photos) => ({ type: SAVE_PHOTO_SUCCESS, photos })
 
-export const getProfileThunkCreator = (id) => (dispatch) => {
-    dispatch(setIsFetchingAC(true));
-    id && usersAPI.getProfile(id)
-        .then(({ data }) => {
-            dispatch(setUserProfile(data));
-            dispatch(setIsFetchingAC(false));
-            console.log(data);
-            console.log(id);
-        })
+
+export const getUserProfile = (userId) => async (dispatch) => {
+    let response = await usersAPI.getProfile(userId);
+    dispatch(setUserProfile(response.data));
 }
 
-export const getStatusThunkCreator = (id) => (dispatch) => {
-    dispatch(setIsFetchingAC(true));
-    id && profileAPI.getStatus(id)
-        .then(({ data }) => {
-            dispatch(setStatus(data));
-            dispatch(setIsFetchingAC(false));
-        })
-}
+export const getStatus = (userId) => async (dispatch) => {
+    let response = await profileAPI.getStatus(userId);
+    dispatch(setStatus(response.data));
 
-export const updateStatusThunkCreator = (status) => (dispatch) => {
-    dispatch(setIsFetchingAC(true));
-    profileAPI.updateStatus(status)
-        .then((response) => {
-            if (response.data.resultCode === 0) {
-                dispatch(setStatus(status));
-            }
-            dispatch(setIsFetchingAC(false));
-        })
+}
+export const updateStatus = (status) => async (dispatch) => {
+    let response = await profileAPI.updateStatus(status);
+
+    if (response.data.resultCode === 0) {
+        dispatch(setStatus(status));
+    }
+}
+export const savePhoto = (file) => async (dispatch) => {
+    let response = await profileAPI.savePhoto(file);
+    if (response.data.resultCode === 0) {
+        dispatch(savePhotoSuccess(response.data.data.photos));
+    }
+}
+export const saveProfile = (profile) => async (dispatch, getState) => {
+    const userId = getState().auth.userId;
+    const response = await profileAPI.saveProfile(profile);
+
+    if (response.data.resultCode === 0) {
+        dispatch(getUserProfile(userId));
+    }
 }
 
 export default profileReducer;

@@ -9,10 +9,6 @@ import { createPages } from '../common/createPages/pagesCreator';
 
 const Users = () => {
 
-    const navigate = useNavigate();
-
-    const isAuth = useSelector((state) => state.auth.isAuth);
-
     const users = useSelector((state) => state.usersPage.users);
     const pageSize = useSelector((state) => state.usersPage.pageSize);
     const totalUsersCount = useSelector((state) => state.usersPage.totalUsersCount);
@@ -30,10 +26,6 @@ const Users = () => {
     useEffect(() => {
         dispatch(getUsersThunkCreator(currentPage, pageSize))
     }, [currentPage, totalUsersCount, pageSize]);
-
-    if (!isAuth) {
-        navigate('./../../login')
-    }
 
     return (
         <div>

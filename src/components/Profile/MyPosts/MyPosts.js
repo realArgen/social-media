@@ -1,44 +1,58 @@
-import React from 'react'
-import c from './MyPosts.module.css'
-import Post from './Post/Post'
-import { addPostActionCreator, updateNewPostTextActionCreator } from '../../../redux/profileReducer';
+import React from 'react';
+import s from './MyPosts.module.css';
+import Post from "./Post/Post";
+import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
+import { addPost } from '../../../redux/profileReducer';
+
 
 const MyPosts = () => {
-
     const posts = useSelector((state) => state.profilePage.posts);
-    const newPostText = useSelector((state) => state.profilePage.newPostText);
 
     const dispatch = useDispatch();
 
-    const onAddPost = () => {
-        dispatch(addPostActionCreator())
-    }
+    const { handleSubmit, register, formState: { errors }, reset } = useForm();
 
-    const onPostChange = (e) => {
-        dispatch(updateNewPostTextActionCreator(e.target.value));
-    }
-
+    const onSubmit = (data) => {
+        dispatch(addPost(data.newPostText))
+        reset();
+    };
 
     return (
-        <div className={c.postsBlock}>
-            <h3>My posts</h3>
+        <div className={s.postsBlock}>
             <div>
-                <div> <textarea
-                    value={newPostText}
-                    onChange={onPostChange}
-                    cols="30" rows="5"
-                />
+                <h3>My posts</h3>
+                <AddNewPostForm onSubmit={handleSubmit(onSubmit)} register={register} errors={errors} />
+                <div className={s.posts}>
+                    {posts.map(d => <Post key={d.id} message={d.message} likes={d.likes} />)}
                 </div>
-                <div><button onClick={onAddPost}>Add Post</button></div>
-            </div>
-            <div className={c.posts}>
-                {posts.map(d => <Post key={d.id} message={d.message} likes={d.likes} />)}
             </div>
         </div>
-    )
+    );
 }
 
-export default MyPosts
 
+const AddNewPostForm = ({ onSubmit, register, errors }) => {
+    return (
+        <form onSubmit={onSubmit}>
+            <div>
+                <textarea
+                    {...register("newPostText", { required: "field is required", maxLength: 10 })}
+                    placeholder="New message"
+                />
+                {errors.newPostText && errors.newPostText.type === "required" && (
+                    <span className={s.error}>{errors?.newPostText?.message || "Error!"}</span>
+                )}
+                {errors.newPostText && errors.newPostText.type === "maxLength" && (
+                    <span className={s.error}>{errors?.newPostText?.message || "Error!"}</span>
+                )}
 
+            </div>
+            <div>
+                <button>Add post</button>
+            </div>
+        </form>
+    );
+}
+
+export default MyPosts;

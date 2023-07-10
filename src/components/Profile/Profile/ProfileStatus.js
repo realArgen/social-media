@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { updateStatusThunkCreator } from '../../../redux/profileReducer'
+import { updateStatus } from '../../../redux/profileReducer'
 
 const ProfileStatus = () => {
 
@@ -10,13 +10,12 @@ const ProfileStatus = () => {
 
 
 
-
     const [editMode, setEditMode] = useState(false);
     const [inputText, setinputText] = useState("dfdf");
 
     const deactivateEditMode = () => {
         setEditMode(false)
-        dispatch(updateStatusThunkCreator(inputText))
+        dispatch(updateStatus(inputText))
     }
 
     return (
@@ -24,12 +23,14 @@ const ProfileStatus = () => {
         <div>
             {!editMode &&
                 <div>
-                    <span value={status || "no status currently"} onDoubleClick={() => { setEditMode(true) }}>{status}</span>
+                    <b>Status:</b>
+                    <span style={{ marginLeft: "5px" }} value={status || "no status currently"} onDoubleClick={() => { setEditMode(true) }}>{status}</span>
                 </div>
             }
             {editMode &&
                 <div>
-                    <input value={inputText} onChange={(e) => setinputText(e.target.value)} onBlur={() => deactivateEditMode(false)} />
+                    <b>Status:</b>
+                    <input style={{ marginLeft: "5px" }} value={inputText} onChange={(e) => setinputText(e.target.value)} onBlur={() => deactivateEditMode(false)} />
                 </div>
             }
         </div>

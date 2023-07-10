@@ -1,19 +1,12 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import c from './Header.module.css'
 import { Link } from 'react-router-dom'
-import { getAuthUserData } from '../../redux/auth-reducer'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 const Header = () => {
 
     const isAuth = useSelector((state) => state.auth.isAuth);
     const login = useSelector((state) => state.auth.login);
-
-    const dispatch = useDispatch();
-
-    useEffect(() => {
-        dispatch(getAuthUserData())
-    }, [])
 
 
     return (

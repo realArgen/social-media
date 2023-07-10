@@ -1,9 +1,8 @@
 import React from 'react'
-import c from './Profile.module.css'
-import ProfileInfo from './ProfileInfo/ProfileInfo'
+import ProfileInfo from './Profile/Profile'
 import MyPosts from './MyPosts/MyPosts'
 
-const Profile = () => {
+const Content = () => {
 
     return (
         <div>
@@ -13,4 +12,4 @@ const Profile = () => {
     )
 }
 
-export default Profile
+export default Content

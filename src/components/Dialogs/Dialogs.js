@@ -26,11 +26,11 @@ const Dialogs = () => {
         dispatch(updateNewMessageActionCreator(e.target.value));
     };
 
-    useEffect(() => {
-        if (!isAuth) {
-            navigate('./../../login')
-        }
-    }, [isAuth])
+    // useEffect(() => {
+    //     if (!isAuth) {
+    //         navigate('./../../login')
+    //     }
+    // }, [isAuth])
 
 
     return (

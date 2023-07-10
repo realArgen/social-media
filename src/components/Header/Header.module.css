@@ -1,25 +1,53 @@
 .header {
     grid-area: h;
-    background: rgb(146, 184, 31);
+    background-color: #1e2638;
     display: flex;
-    justify-content: space-between;
-    column-gap: 50px;
     align-items: center;
-    padding: 0 40px;
+    justify-content: space-between;
+    padding: 20px;
+    color: fff;
 }
 
-.header>img {
-    width: 40px;
-}
-
-.loginBLock {
-    /* float: right; */
-    cursor: pointer;
-    font-size: 26px;
-    color: rgb(255, 255, 255);
+.header a {
+    text-decoration: none;
+    font-size: 23px;
     font-weight: bold;
 }
 
-.logo {
+.header img {
+    padding: 5px;
+    width: 50px;
+}
+
+.loginBlock {
+    float: right;
+}
+
+.loginBlock a {
+    color: white;
+}
+
+.colorLogin {
+    color: white;
+}
+
+.unlogged {
+    background: #17428c;
+    border-radius: 20px;
+    padding: 10px;
+}
+
+.logged {
+    background: #000000;
+    border-radius: 10px;
+    padding: 9px;
     color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.login {
+    color: #fff;
+    font-weight: bold;
+    font-size: 24px;
 }

@@ -9,7 +9,7 @@ import Dialogs from "./components/Dialogs/Dialogs";
 import { initializeApp } from "./redux/app-reducer";
 import { useDispatch, useSelector } from "react-redux";
 import Preloader from "./components/common/Preloader/Preloader";
-import Content from "./components/Profile/Content";
+import Content from "./components/Content/Content";
 
 const App = () => {
 
@@ -44,7 +44,7 @@ const App = () => {
             {/* <Route path="/dialogs/*" element={<React.Suspense fallback={<div>...loading</div>}><Dialogs /></React.Suspense >} />
                         <Route path="/content/:userId?" element={<React.Suspense fallback={<div>...loading</div>}><Content /></React.Suspense >} /> */}
             <Route path="/dialogs/*" element={<Dialogs />} />
-            <Route path="/content/:id?" element={<Content />} />
+            <Route path="/profile/:id?" element={<Content />} />
             <Route path="/login" element={<Login />} />
             <Route path="/profile/*" element={<Content />} />
             <Route path="/users" element={<Users />} />

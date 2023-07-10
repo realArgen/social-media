@@ -62,6 +62,7 @@ export const savePhotoSuccess = (photos) => ({ type: SAVE_PHOTO_SUCCESS, photos 
 
 export const getUserProfile = (userId) => async (dispatch) => {
     let response = await usersAPI.getProfile(userId);
+    console.log("getUsersProfile", response.data);
     dispatch(setUserProfile(response.data));
 }
 
@@ -93,3 +94,4 @@ export const saveProfile = (profile) => async (dispatch, getState) => {
 }
 
 export default profileReducer;
+

@@ -1,24 +1,27 @@
-import React from 'react'
-import c from './Header.module.css'
-import { Link } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import React, { useEffect } from 'react';
+import s from './Header.module.css';
+import { NavLink } from "react-router-dom";
+import logo from "../../assets/images/logo.ico"
+import { useDispatch, useSelector } from 'react-redux';
+import { logout } from "../../redux/auth-reducer";
+
 
 const Header = () => {
+    const dispatch = useDispatch();
 
     const isAuth = useSelector((state) => state.auth.isAuth);
     const login = useSelector((state) => state.auth.login);
 
-
     return (
-        <header className={c.header}>
-            <img src="https://www.freepnglogos.com/uploads/google-logo-png/google-logo-png-webinar-optimizing-for-success-google-business-webinar-13.png" alt="logo" />
-            <div className={c.loginBLock}>
-                {isAuth ? login :
-                    <Link className={c.logo} to={"/login"}>Login</Link>
-                }
+        <header className={s.header}>
+            <NavLink to={"/profile"}> <img src={logo} alt="logo" /></NavLink>
+            <div className={s.loginBlock}>
+                {isAuth
+                    ? <div className={s.login}>{login} - <button className={s.logged} onClick={() => dispatch(logout())}>Log out</button></div>
+                    : <NavLink to="/login" className={s.unlogged}>Login</NavLink>}
             </div>
         </header>
-    )
+    );
 }
 
-export default Header 
+export default Header;

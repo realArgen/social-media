@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import s from './ProfileInfo.module.css';
+import Preloader from '../../common/Preloader/Preloader';
+import { getStatus, getUserProfile, savePhoto, saveProfile } from '../../../redux/profileReducer';
 import userPhoto from '../../../assets/images/user.jpg';
 import ProfileDataForm from './ProfileForm';
 import ProfileStatus from './ProfileStatus';
-import { getStatus, getUserProfile, savePhoto, saveProfile } from '../../../redux/profileReducer';
-import Preloader from '../../common/Preloader/Preloader';
 
 const ProfileInfo = () => {
     const dispatch = useDispatch();
@@ -101,3 +101,4 @@ const ProfileData = ({ profile, isMe, goToEditMode }) => {
 };
 
 export default ProfileInfo;
+

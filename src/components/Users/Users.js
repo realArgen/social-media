@@ -9,13 +9,13 @@ import { createPages } from '../common/createPages/pagesCreator';
 
 const Users = () => {
 
+    const isAuth = useSelector((state) => state.auth.isAuth);
     const users = useSelector((state) => state.usersPage.users);
     const pageSize = useSelector((state) => state.usersPage.pageSize);
     const totalUsersCount = useSelector((state) => state.usersPage.totalUsersCount);
     const currentPage = useSelector((state) => state.usersPage.currentPage);
     const isFetching = useSelector((state) => state.usersPage.isFetching);
     const followingInProgress = useSelector((state) => state.usersPage.followingInProgress);
-
     let pages = [];
     let pagesCount = Math.ceil(totalUsersCount / pageSize);
 
@@ -53,12 +53,12 @@ const Users = () => {
                             </div>
                             <div>
                                 {u.followed ?
-                                    <button disabled={followingInProgress.some((id) => id === u.id)} onClick={() => {
+                                    <button disabled={followingInProgress.some((id) => id === u.id) || !isAuth} onClick={() => {
                                         dispatch(unfollowSuccess(u.id))
                                     }}>
                                         Unfollow
                                     </button> :
-                                    <button disabled={followingInProgress.some((id) => id === u.id)} onClick={() => {
+                                    <button disabled={followingInProgress.some((id) => id === u.id) || !isAuth} onClick={() => {
                                         dispatch(followSuccess(u.id))
                                     }}>
                                         Follow

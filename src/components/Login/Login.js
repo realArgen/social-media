@@ -22,7 +22,7 @@ const Login = () => {
 
     useEffect(() => {
         if (isAuth) {
-            navigate("/content");
+            navigate("/profile");
         }
     }, [isAuth])
 

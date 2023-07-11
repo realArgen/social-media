@@ -1,69 +1,97 @@
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { authAPI } from "../api/api";
 
-const SET_USER_DATA = 'samurai-network/auth/SET_USER_DATA';
-const TOGGLE_IS_FETCHING = 'TOGGLE_IS_FETCHING';
-
-
-
-let initialState = {
+const initialState = {
     userId: null,
     email: null,
     login: null,
     isAuth: false,
+    isFetching: false,
 };
 
-
-export const toggleIsFetching = (isFetching) => ({ type: TOGGLE_IS_FETCHING, isFetching });
-const authReducer = (state = initialState, action) => {
-    switch (action.type) {
-        case SET_USER_DATA:
-            return {
-                ...state,
-                ...action.payload
-            }
-        case TOGGLE_IS_FETCHING: {
-            return { ...state, isFetching: action.isFetching }
+export const getAuthUserData = createAsyncThunk(
+    "auth/getAuthUserData",
+    async (_, { dispatch }) => {
+        const response = await authAPI.me();
+        if (response.data.resultCode === 0) {
+            const { id, email, login } = response.data.data;
+            dispatch(setAuthUserData({ userId: id, email, login, isAuth: true }));
         }
-
-        default:
-            return state;
     }
-}
+);
 
-export const setAuthUserData = (userId, email, login, isAuth) => ({
-    type: SET_USER_DATA,
-    payload: { userId, email, login, isAuth }
-});
-
-
-
-
-export const getAuthUserData = () => async (dispatch) => {
-    let response = await authAPI.me();
-    if (response.data.resultCode === 0) {
-        let { id, email, login } = response.data.data;
-        dispatch(setAuthUserData(id, email, login, true));
+export const login = createAsyncThunk(
+    "auth/login",
+    async ({ email, password, rememberMe }, { dispatch }) => {
+        dispatch(toggleIsFetching(true));
+        const response = await authAPI.login(email, password, rememberMe);
+        if (response.data.resultCode === 0) {
+            await dispatch(getAuthUserData());
+            dispatch(toggleIsFetching(false));
+        }
     }
-}
+);
 
-export const login = (email, password, rememberMe) => async (dispatch) => {
-    dispatch(toggleIsFetching(true));
-    let response = await authAPI.login(email, password, rememberMe);
-    console.log("login....");
-    if (response.data.resultCode === 0) {
-        dispatch(getAuthUserData())
-        dispatch(toggleIsFetching(false));
-    }
-}
-
-export const getAuthUserDataLogout = () => {
-    return setAuthUserData(null, null, null, false);
-};
-
-export const logout = () => async (dispatch) => {
-    let response = await authAPI.logout();
+export const logout = createAsyncThunk("auth/logout", async (_, { dispatch }) => {
+    const response = await authAPI.logout();
     if (response.data.resultCode === 0) {
         dispatch(getAuthUserDataLogout());
     }
-};
-export default authReducer;
+});
+
+const authSlice = createSlice({
+    name: "auth",
+    initialState,
+    reducers: {
+        setAuthUserData: (state, action) => {
+            const { userId, email, login, isAuth } = action.payload;
+            state.userId = userId;
+            state.email = email;
+            state.login = login;
+            state.isAuth = isAuth;
+        },
+        getAuthUserDataLogout: (state) => {
+            state.userId = null;
+            state.email = null;
+            state.login = null;
+            state.isAuth = false;
+        },
+        toggleIsFetching: (state, action) => {
+            state.isFetching = action.payload;
+        },
+    },
+    extraReducers: (builder) => {
+        builder.addCase(getAuthUserData.pending, (state) => {
+            state.isFetching = true;
+        });
+        builder.addCase(getAuthUserData.fulfilled, (state) => {
+            state.isFetching = false;
+        });
+        builder.addCase(getAuthUserData.rejected, (state) => {
+            state.isFetching = false;
+        });
+        builder.addCase(login.pending, (state) => {
+            state.isFetching = true;
+        });
+        builder.addCase(login.fulfilled, (state) => {
+            state.isFetching = false;
+        });
+        builder.addCase(login.rejected, (state) => {
+            state.isFetching = false;
+        });
+        builder.addCase(logout.pending, (state) => {
+            state.isFetching = true;
+        });
+        builder.addCase(logout.fulfilled, (state) => {
+            state.isFetching = false;
+        });
+        builder.addCase(logout.rejected, (state) => {
+            state.isFetching = false;
+        });
+    },
+});
+
+export const { setAuthUserData, getAuthUserDataLogout, toggleIsFetching } =
+    authSlice.actions;
+
+export default authSlice.reducer;

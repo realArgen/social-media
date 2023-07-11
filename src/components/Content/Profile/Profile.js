@@ -8,6 +8,7 @@ import userPhoto from '../../../assets/images/user.jpg';
 import ProfileDataForm from './ProfileForm';
 import ProfileStatus from './ProfileStatus';
 
+
 const ProfileInfo = () => {
     const dispatch = useDispatch();
     const profile = useSelector((state) => state.profilePage.profile);

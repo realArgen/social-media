@@ -17,7 +17,7 @@ const Login = () => {
     const navigate = useNavigate();
 
     const onSubmit = ({ email, password, rememberMe }) => {
-        dispatch(login(email, password, rememberMe));
+        dispatch(login({ email, password, rememberMe }));
     };
 
     useEffect(() => {

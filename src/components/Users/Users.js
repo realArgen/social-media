@@ -24,7 +24,7 @@ const Users = () => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(getUsersThunkCreator(currentPage, pageSize))
+        dispatch(getUsersThunkCreator({ currentPage, pageSize }))
     }, [currentPage, totalUsersCount, pageSize]);
 
     return (

@@ -1,12 +1,7 @@
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { profileAPI, usersAPI } from "../api/api";
 
-const ADD_POST = 'ADD_POST';
-const DELETE_POST = 'DELETE_POST';
-const SAVE_PHOTO_SUCCESS = 'SAVE_PHOTO_SUCCESS';
-const SET_USER_PROFILE = 'SET_USER_PROFILE';
-const SET_STATUS = 'SET_STATUS';
-
-let initialState = {
+const initialState = {
     posts: [
         { id: 1, message: 'Hi, how are you?', likesCount: 10 },
         { id: 2, message: 'It is my first post', likesCount: 0 },
@@ -17,81 +12,90 @@ let initialState = {
     ],
     profile: null,
     status: ""
-}
+};
 
+export const getUserProfile = createAsyncThunk(
+    "profile/getUserProfile",
+    async (userId) => {
+        const response = await usersAPI.getProfile(userId);
+        return response.data;
+    }
+);
 
-const profileReducer = (state = initialState, action) => {
-    switch (action.type) {
-        case ADD_POST: {
-            let newPost = {
-                id: 7,
-                message: action.newPostText,
+export const getStatus = createAsyncThunk(
+    "profile/getStatus",
+    async (userId) => {
+        const response = await profileAPI.getStatus(userId);
+        return response.data;
+    }
+);
+
+export const updateStatus = createAsyncThunk(
+    "profile/updateStatus",
+    async (status) => {
+        const response = await profileAPI.updateStatus(status);
+        if (response.data.resultCode === 0) {
+            return status;
+        }
+    }
+);
+
+export const savePhoto = createAsyncThunk(
+    "profile/savePhoto",
+    async (file) => {
+        const response = await profileAPI.savePhoto(file);
+        if (response.data.resultCode === 0) {
+            return response.data.data.photos;
+        }
+    }
+);
+
+export const saveProfile = createAsyncThunk(
+    "profile/saveProfile",
+    async (profile, { getState, dispatch }) => {
+        const userId = getState().auth.userId;
+        const response = await profileAPI.saveProfile(profile);
+        if (response.data.resultCode === 0) {
+            await dispatch(getUserProfile(userId));
+        }
+    }
+);
+
+const profileSlice = createSlice({
+    name: "profile",
+    initialState,
+    reducers: {
+        addPost: (state, action) => {
+            const newPost = {
+                id: state.posts.length + 1,
+                message: action.payload,
                 likesCount: 0
             };
-            return {
-                ...state,
-                posts: [...state.posts, newPost],
-                newPostText: ''
-            };
-        }
+            state.posts.push(newPost);
+        },
+        deletePost: (state, action) => {
+            state.posts = state.posts.filter((p) => p.id !== action.payload);
+        },
+        savePhotoSuccess: (state, action) => {
+            state.profile = { ...state.profile, photos: action.payload };
+        },
+    },
+    extraReducers: (builder) => {
+        builder.addCase(getUserProfile.fulfilled, (state, action) => {
+            state.profile = action.payload;
+        });
+        builder.addCase(getStatus.fulfilled, (state, action) => {
+            state.status = action.payload;
+        });
+        builder.addCase(updateStatus.fulfilled, (state, action) => {
+            state.status = action.payload;
+        });
+        builder.addCase(savePhoto.fulfilled, (state, action) => {
+            state.profile = { ...state.profile, photos: action.payload };
+        });
+    },
+});
 
-        case SET_STATUS: {
-            return {
-                ...state,
-                status: action.status
-            }
-        }
-        case SET_USER_PROFILE: {
-            return { ...state, profile: action.profile }
-        }
-        case DELETE_POST:
-            return { ...state, posts: state.posts.filter(p => p.id != action.postId) }
-        case SAVE_PHOTO_SUCCESS:
-            return { ...state, profile: { ...state.profile, photos: action.photos } }
-        default:
-            return state;
-    }
-}
+export const { addPost, deletePost, savePhotoSuccess } = profileSlice.actions;
 
-export const addPost = (newPostText) => ({ type: ADD_POST, newPostText })
-export const setUserProfile = (profile) => ({ type: SET_USER_PROFILE, profile })
-export const setStatus = (status) => ({ type: SET_STATUS, status })
-export const deletePost = (postId) => ({ type: DELETE_POST, postId })
-export const savePhotoSuccess = (photos) => ({ type: SAVE_PHOTO_SUCCESS, photos })
-
-
-export const getUserProfile = (userId) => async (dispatch) => {
-    let response = await usersAPI.getProfile(userId);
-    console.log("getUsersProfile", response.data);
-    dispatch(setUserProfile(response.data));
-}
-
-export const getStatus = (userId) => async (dispatch) => {
-    let response = await profileAPI.getStatus(userId);
-    dispatch(setStatus(response.data));
-
-}
-export const updateStatus = (status) => async (dispatch) => {
-    let response = await profileAPI.updateStatus(status);
-
-    if (response.data.resultCode === 0) {
-        dispatch(setStatus(status));
-    }
-}
-export const savePhoto = (file) => async (dispatch) => {
-    let response = await profileAPI.savePhoto(file);
-    if (response.data.resultCode === 0) {
-        dispatch(savePhotoSuccess(response.data.data.photos));
-    }
-}
-export const saveProfile = (profile) => async (dispatch, getState) => {
-    const userId = getState().auth.userId;
-    const response = await profileAPI.saveProfile(profile);
-
-    if (response.data.resultCode === 0) {
-        dispatch(getUserProfile(userId));
-    }
-}
-
-export default profileReducer;
-
+export default profileSlice.reducer;

@@ -29,6 +29,7 @@ const Users = () => {
 
     return (
         <div>
+            <h2 style={{ position: "absolute", top: "5px", fontSize: "30px" }}>Users</h2>
             <div className={styles.pagesContainer}>
                 {"<<"}
                 {pages.map((p) => {

@@ -61,6 +61,7 @@ const ProfileInfo = () => {
 
     return (
         <div>
+            <h2 style={{ position: "absolute", top: "5px", fontSize: "30px" }}>Profile</h2>
             <div className={s.descriptionBlock}>
                 <img src={profile.photos.large || profile.photos.small || userPhoto} className={s.mainPhoto} alt="ava" />
                 {isMe && <p><input type="file" onChange={(e) => onPhotoSelected(e)} /></p>}

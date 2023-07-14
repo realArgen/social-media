@@ -10,6 +10,7 @@ import { initializeApp } from "./redux/app-reducer";
 import { useDispatch, useSelector } from "react-redux";
 import Preloader from "./components/common/Preloader/Preloader";
 import Content from "./components/Content/Content";
+import News from "./components/News/News";
 
 const App = () => {
 
@@ -48,6 +49,7 @@ const App = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/profile/*" element={<Content />} />
             <Route path="/users" element={<Users />} />
+            <Route path="/news" element={<News />} />
           </Routes>
 
         </div>

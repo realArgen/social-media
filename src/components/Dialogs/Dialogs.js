@@ -35,6 +35,7 @@ const Dialogs = () => {
 
     return (
         <div className={c.dialogs}>
+            <h2 style={{ color: 'white', fontSize: '35px', position: 'absolute', top: '-5px', left: "50%", transform: "translateX(-50%)" }}>Messages</h2>
             <div className={c["dialogs-items"]}>
                 {dialogs.map(d => {
                     return <DialogItem name={d.name} id={d.id} />

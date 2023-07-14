@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { Typography, Button, TextField, Grid, Avatar } from '@material-ui/core';
+import { Typography, Button, Grid, Avatar, Modal } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { getStatus, getUserProfile, savePhoto, saveProfile } from '../../../redux/profileReducer';
 import Preloader from '../../common/Preloader/Preloader';
@@ -33,20 +33,21 @@ const ProfileInfo = () => {
     const profile = useSelector((state) => state.profilePage.profile);
     const userId = useSelector((state) => state.auth.userId);
     const isAuth = useSelector((state) => state.auth.isAuth);
+    const isFetching = useSelector((state) => state.profilePage.isFetching);
     let { id } = useParams();
     const [editMode, setEditMode] = useState(false);
     const [isMe, setIsMe] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
-        if (!id && userId) {
+        if (!id && userId && isAuth) {
             id = userId;
             setIsMe(true);
         } else {
             setEditMode(false);
             setIsMe(false);
         }
-    }, [id]);
+    }, [id, isAuth]);
 
     useEffect(() => {
         dispatch(getUserProfile(id));
@@ -55,13 +56,13 @@ const ProfileInfo = () => {
 
     const onPhotoSelected = (e) => {
         if (e.target.files.length) {
-            console.log("files", e.target.files);
+            console.log('files', e.target.files);
             dispatch(savePhoto(e.target.files[0]));
         }
     };
 
     const toggleModal = () => {
-        setIsModalOpen((prevState) => !prevState);
+        setIsModalOpen((prevIsModalOpen) => !prevIsModalOpen);
     };
 
     const onSubmit = (data) => {
@@ -73,18 +74,23 @@ const ProfileInfo = () => {
         return <Preloader isFetching={true} />;
     }
 
-    if (!isAuth && id == userId) {
+    if (!isAuth && (id == userId)) {
         return <Preloader isFetching={true} />;
     }
 
     return (
-        <div className={classes.profileContainer}>
-            <Typography variant="h2" className={classes.heading} style={{ position: "absolute", top: "10px", top: '15px', left: "50%", transform: "translateX(-50%)" }}>
+        isFetching ? <Preloader isFetching={true} /> : <div className={classes.profileContainer}>
+            <Typography variant="h2" className={classes.heading}>
                 Profile
             </Typography>
             <Grid container spacing={2}>
                 <Grid item xs={12} sm={4}>
-                    <Avatar src={profile.photos.large || profile.photos.small || userPhoto} className={classes.avatar} alt="avatar" />
+                    <Avatar
+                        src={profile.photos.large || profile.photos.small || userPhoto}
+                        className={classes.avatar}
+                        alt="avatar"
+                        onClick={toggleModal}
+                    />
                     {isMe && (
                         <Button component="label" style={{ color: '#fff' }}>
                             Upload Photo
@@ -102,11 +108,13 @@ const ProfileInfo = () => {
                 </Grid>
             </Grid>
             {isModalOpen && (
-                <div className={s.modalOverlay} onClick={toggleModal}>
-                    <div className={s.modalContent}>
-                        <img src={profile.photos.large || profile.photos.small || userPhoto} className={s.modalPhoto} alt="ava" />
+                <Modal open={isModalOpen} onClose={toggleModal}>
+                    <div className={s.modalOverlay} onClick={toggleModal}>
+                        <div className={s.modalContent}>
+                            <img src={profile.photos.large || profile.photos.small || userPhoto} className={s.modalPhoto} alt="ava" />
+                        </div>
                     </div>
-                </div>
+                </Modal>
             )}
         </div>
     );
@@ -116,24 +124,24 @@ const ProfileData = ({ profile, isMe, goToEditMode }) => {
     return (
         <div>
             {isMe && (
-                <div style={{ marginBottom: "15px" }}>
+                <div style={{ marginBottom: '15px' }}>
                     <Button variant="contained" color="primary" onClick={goToEditMode}>
                         Edit
                     </Button>
                 </div>
             )}
-            <div style={{ marginBottom: "15px" }}>
+            <div style={{ marginBottom: '15px' }}>
                 <b>Full name:</b> {profile.fullName}
             </div>
-            <div style={{ marginBottom: "15px" }}>
+            <div style={{ marginBottom: '15px' }}>
                 <b>Looking for a job:</b> {profile.lookingForAJob ? 'yes' : 'no'}
             </div>
             {profile.lookingForAJob && (
-                <div style={{ marginBottom: "15px" }}>
+                <div style={{ marginBottom: '15px' }}>
                     <b>My professional skills:</b> {profile.lookingForAJobDescription}
                 </div>
             )}
-            <div style={{ marginBottom: "15px" }}>
+            <div style={{ marginBottom: '15px' }}>
                 <b>About me:</b> {profile.aboutMe}
             </div>
         </div>

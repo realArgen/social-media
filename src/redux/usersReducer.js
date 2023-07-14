@@ -3,7 +3,7 @@ import { usersAPI } from "../api/api";
 
 const initialState = {
     users: [],
-    pageSize: 100,
+    pageSize: 20,
     totalUsersCount: 100,
     currentPage: 1,
     isFetching: false,

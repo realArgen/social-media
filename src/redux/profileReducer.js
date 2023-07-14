@@ -5,13 +5,10 @@ const initialState = {
     posts: [
         { id: 1, message: 'Hi, how are you?', likesCount: 10 },
         { id: 2, message: 'It is my first post', likesCount: 0 },
-        { id: 3, message: 'Sveta', likesCount: 14 },
-        { id: 4, message: 'Sasha', likesCount: 5 },
-        { id: 5, message: 'Runner', likesCount: 4 },
-        { id: 6, message: 'Valera', likesCount: 23 }
     ],
     profile: null,
-    status: ""
+    status: "",
+    isFetching: false,
 };
 
 export const getUserProfile = createAsyncThunk(
@@ -81,7 +78,11 @@ const profileSlice = createSlice({
         },
     },
     extraReducers: (builder) => {
+        builder.addCase(getUserProfile.pending, (state, action) => {
+            state.isFetching = true;
+        });
         builder.addCase(getUserProfile.fulfilled, (state, action) => {
+            state.isFetching = false;
             state.profile = action.payload;
         });
         builder.addCase(getStatus.fulfilled, (state, action) => {

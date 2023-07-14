@@ -74,6 +74,7 @@ const Users = () => {
         dispatch(unfollowSuccess(userId));
     };
 
+
     return (
         <div style={{ padding: '20px' }}>
             <Typography variant="h2" style={{ position: "absolute", top: "10px", top: '15px', left: "50%", transform: "translateX(-50%)" }} className={classes.heading}>
